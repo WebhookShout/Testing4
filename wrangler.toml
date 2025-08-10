@@ -1,0 +1,4 @@
+name = "get-random-tiktok-video"
+main = "index.js"
+compatibility_date = "2025-08-10"
+workers_dev = true
