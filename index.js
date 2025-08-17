@@ -36,7 +36,7 @@ export default {
         }
       };
 
-      return new Response(JSON.stringify(quiz, null, 2), {
+      return new Response(JSON.stringify(quiz), {
         headers: { 'content-type': 'application/json' }
       });
     } catch (err) {
