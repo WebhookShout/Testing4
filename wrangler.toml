@@ -1,4 +1,4 @@
-name = "get-random-tiktok-video"
+name = "country-quiz"
 main = "index.js"
-compatibility_date = "2025-08-10"
+compatibility_date = "2025-08-17"
 workers_dev = true
