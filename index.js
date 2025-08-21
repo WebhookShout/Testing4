@@ -7,7 +7,7 @@ export default {
 
     // Ask AI by Text
     if (pathname === "text" && msg) {
-      const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(msg)}`);
+      const response = await fetch(`https://text.pollinations.ai/${msg}`);
       return new Response(await response.text(), {
         headers: { "content-type": "text/plain" }
       });
@@ -15,7 +15,7 @@ export default {
 
     // Generate Image
     if (pathname === "image" && msg) {
-      const response = await fetch(`https://image.pollinations.ai/prompt/${encodeURIComponent(msg)}`);
+      const response = await fetch(`https://image.pollinations.ai/prompt/${msg}`);
       return new Response(await response.arrayBuffer(), {
         headers: {
           "content-type": response.headers.get("content-type") || "image/jpeg",
