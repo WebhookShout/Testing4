@@ -6,7 +6,7 @@ export default {
     
     // Ask AI by Text
     if (pathname && pathname == "text" && msg) {
-      const response = await fetch(`https://text.pollinations.ai/${msg}`);
+      const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(msg)}`);
       
       return new Response(await response.text(), {
         headers: { "content-type": "text/plain" }
