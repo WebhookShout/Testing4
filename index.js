@@ -15,7 +15,7 @@ export default {
 
     // Generate Image
     if (type === "image" && msg) {
-      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(msg)}`;
+      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(msg)}?nologo=true`;
       const response = await fetch(apiUrl, {
         cf: {
           image: {
