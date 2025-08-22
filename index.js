@@ -15,11 +15,17 @@ export default {
 
     // Generate Image
     if (type === "image" && msg) {
-      const response = await fetch("https://image.pollinations.ai/prompt/" + msg);
-      return new Response(await response.arrayBuffer(), {
-        headers: {
-          "content-type": response.headers.get("content-type") || "image/jpeg",
+      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(msg)}?nologo=true`;
+      const response = await fetch(apiUrl, {
+        cf: {
+          image: {
+            format: "png"   // force convert to PNG
+          }
         }
+      });
+
+      return new Response(await response.arrayBuffer(), {
+        headers: { "content-type": "image/png" }
       });
     }
 
