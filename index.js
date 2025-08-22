@@ -17,11 +17,7 @@ export default {
     if (type === "image" && msg) {
       const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(msg)}?nologo=true&width=1024&height=612`;
       const response = await fetch(apiUrl, {
-        cf: {
-          image: {
-            format: "png"   // force convert to PNG
-          }
-        }
+        cf: { image: { format: "png" }}
       });
 
       return new Response(await response.arrayBuffer(), {
