@@ -9,6 +9,6 @@ export default {
     const response = await fetch("https://api.ipify.org/?format=text");
     const IP = await response.text(); // since the API returns plain text
 
-    return new Response(`IP: ${IP}`, { status: 400 });
+    return new Response("IP: " + IP);
   }
 }
