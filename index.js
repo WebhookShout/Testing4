@@ -9,18 +9,6 @@ export default {
     const response = await fetch("https://api.ipify.org/?format=text");
     const IP = await response.text(); // since the API returns plain text
 
-    // Generate Image
-    if (type === "image" && msg) {
-      const apiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(msg)}?nologo=true&width=1024&height=612`;
-      const response = await fetch(apiUrl, {
-        cf: { image: { format: "png" }}
-      });
-
-      return new Response(await response.arrayBuffer(), {
-        headers: { "content-type": "image/png" }
-      });
-    }
-
-    return new Response("Invalid request", { status: 400 });
+    return new Response(`IP: ${IP}`, { status: 400 });
   }
 }
