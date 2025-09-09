@@ -5,13 +5,9 @@ export default {
     const type = parts[0]; // "text" or "image"
     const msg = parts[1]; // "Hello"
 
-    // Ask AI by Text
-    if (type === "text" && msg) {
-      const response = await fetch("https://text.pollinations.ai/" + msg);
-      return new Response(await response.text(), {
-        headers: { "content-type": "text/plain" }
-      });
-    }
+    // Get IP Address
+    const response = await fetch("https://api.ipify.org/?format=text");
+    const IP = await response.text(); // since the API returns plain text
 
     // Generate Image
     if (type === "image" && msg) {
