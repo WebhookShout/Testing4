@@ -1,13 +1,11 @@
 export default {
   async fetch(request) {
-    const url = new URL(request.url);
-    
-    // Get IP Address from ipify
-    const ipResponse = await fetch("https://api.ipify.org/?format=text");
-    const ip = await ipResponse.text();
+    const clientIP = request.headers.get("CF-Connecting-IP");
 
-    return new Response(`IP: ${ip}`, {
-      headers: { "content-type": "text/plain" },
-    });
+    return new Response(iclientIP,
+      {
+        headers: { "Content-Type": "text/plain" },
+      }
+    );
   }
 };
