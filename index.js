@@ -77,7 +77,7 @@ export default {
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-      const key = EncodeText({ expiresAt: expiresAt, clientIp: ip }, ServiceLink);
+      const key = EncodeText(JSON.stringify({ expiresAt: expiresAt, clientIp: ip }), ServiceKey);
       
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
