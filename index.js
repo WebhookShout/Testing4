@@ -49,13 +49,13 @@ function DecodeText(encoded, key) {
 //--
 
 // Generate Key function
-function generateKey(groups = 4, blockLen = 5) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+function generateKey(groups = 3, blockLen = 5) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   const rand = () =>
     [...Array(blockLen)]
       .map(() => chars[Math.floor(Math.random() * chars.length)])
       .join("");
-  return Array.from({ length: groups }, rand).join("-");
+  return Array.from({ length: groups }, rand).join("");
 }
 
 // Validate Key function
