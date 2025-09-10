@@ -48,25 +48,6 @@ function DecodeText(encoded, key) {
 }
 //--
 
-// Generate Key function
-function generateKey(groups = 3, blockLen = 5) {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  const rand = () =>
-    [...Array(blockLen)]
-      .map(() => chars[Math.floor(Math.random() * chars.length)])
-      .join("");
-  return Array.from({ length: groups }, rand).join("");
-}
-
-// Validate Key function
-function checkKeyValid(entry) {
-  if (entry.revoked) return { ok: false, reason: "revoked", entry };
-  if (new Date(entry.expiresAt) < new Date())
-    return { ok: false, reason: "expired", entry };
-  return { ok: true, entry };
-}
-
-
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -77,7 +58,7 @@ export default {
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-      const key = EncodeText(JSON.stringify({ expiresAt: expiresAt, clientIp: ip }), ServiceKey);
+      const key = EncodeText(expiresAt, ServiceKey);
       
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
