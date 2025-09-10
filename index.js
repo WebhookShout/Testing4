@@ -27,17 +27,7 @@ export default {
       return json({ ok: true, entry });
     }
 
-    // Revoke key
-    if (path[0] === "revoke" && path[1] && method === "POST") {
-      const key = path[1].toUpperCase();
-      const entry = KEYS[key];
-      if (!entry) return json({ ok: false, reason: "not_found" }, 404);
-
-      entry.revoked = true;
-      return json({ ok: true, entry });
-    }
-
-    return new Response("Not found", { status: 404 });
+    return new Response("404: Not found", { status: 404 });
   }
 };
 
