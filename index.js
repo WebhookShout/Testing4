@@ -10,10 +10,8 @@ export default {
       const now = Date.now();
       const expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString(); // +24h
      
-      return json({
-        key,
-        createdAt: new Date(now).toISOString(),
-        expiresAt
+      return new Response(key, {
+        headers: { "Content-Type": "text/plain" }
       });
     }
 
