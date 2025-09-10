@@ -73,7 +73,7 @@ export default {
     const path = url.pathname.split("/").filter(Boolean);
     const method = request.method;
 
-    // Create new key (always expires in 24h)
+    // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const key = generateKey();
       const now = Date.now();
@@ -84,26 +84,14 @@ export default {
       });
     }
 
-    // Validate key
-    if (path[0] === "validate" && path[1]) {
-      const key = path[1].toUpperCase();
-      const entry = KEYS[key];
-      if (!entry) return json({ ok: false, reason: "not_found" }, 404);
-
-      const valid = checkKeyValid(entry);
-      if (!valid.ok) return json(valid, 403);
-
-      return json({ ok: true, entry });
-    }
+    // Check key
+    if (path[0] === "check" && path[1]) {
+      const key = path[1];
+      
+      return new Response("your key: " + key, {
+        headers: { "Content-Type": "text/plain" }
+      });
 
     return new Response("404: Not found", { status: 404 });
   }
 };
-
-// --- Helpers ---
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { "Content-Type": "application/json" }
-  });
-}
