@@ -79,7 +79,7 @@ export default {
       const now = Date.now();
       const expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString(); // +24h
      
-      return new Response(`${key} ${EncodeText("Hi", ServiceKey)}`, {
+      return new Response(key, {
         headers: { "Content-Type": "text/plain" }
       });
     }
