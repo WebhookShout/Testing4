@@ -72,13 +72,13 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname.split("/").filter(Boolean);
     const method = request.method;
+    const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
 
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
-      const key = generateKey();
-      const now = Date.now();
-      const expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString(); // +24h
-     
+      const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+      const key = EncodeText({ expiresAt: expiresAt, clientIp: ip }, ServiceLink);
+      
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
       });
