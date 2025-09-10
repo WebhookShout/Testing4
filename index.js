@@ -77,7 +77,7 @@ export default {
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-      const key = EncodeText(encodeHash(expiresAt.toString()), ServiceKey);
+      const key = EncodeText(expiresAt, ServiceKey);
       
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
@@ -88,7 +88,7 @@ export default {
     if (path[0] === "check" && path[1]) {
       const key = path[1];
       
-      return new Response(DecodeText(decodeHash(key), ServiceKey), {
+      return new Response(DecodeText(key, ServiceKey), {
         headers: { "Content-Type": "text/plain" }
       });
     }
