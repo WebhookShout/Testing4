@@ -1,6 +1,3 @@
-// In-memory key store (resets if worker restarts!)
-let KEYS = {};
-
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -12,16 +9,12 @@ export default {
       const key = generateKey();
       const now = Date.now();
       const expiresAt = new Date(now + 24 * 60 * 60 * 1000).toISOString(); // +24h
-
-      const entry = {
+     
+      return json({
         key,
         createdAt: new Date(now).toISOString(),
-        expiresAt,
-        revoked: false
-      };
-
-      KEYS[key] = entry;
-      return json({ ok: true, key, entry });
+        expiresAt
+      });
     }
 
     // Validate key
