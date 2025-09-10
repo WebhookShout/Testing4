@@ -1,7 +1,7 @@
 const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 
 //-- Encode Decode Word Function
-const base32Alphabet = 'abcde1234567890';
+const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 function toBase32(bytes) {
   let bits = 0, value = 0, output = '';
   for (let byte of bytes) {
