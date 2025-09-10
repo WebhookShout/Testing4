@@ -88,7 +88,7 @@ export default {
     if (path[0] === "check" && path[1]) {
       const key = path[1];
       
-      return new Response(DecodeText(decodeHash(key, ServiceKey), ServiceKey), {
+      return new Response(DecodeText(decodeHash(key), ServiceKey), {
         headers: { "Content-Type": "text/plain" }
       });
     }
