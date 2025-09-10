@@ -1,4 +1,4 @@
-const ServiceKey = "AdRa-hXtp-44pk-uopl-cVIp-QdG1-Dnh1-adO0-russ-1ov3";
+const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 
 //-- Encode Decode Word Function
 const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
