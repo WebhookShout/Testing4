@@ -50,7 +50,7 @@ function DecodeText(encoded, key) {
 
 
 // Hash code encoder function
-function encodeHash(text, key = ServiceKey) {
+function encodeHash(text, key = "ILoveRussianGirl") {
   return btoa(
     [...text].map((c, i) => 
       String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
@@ -59,7 +59,7 @@ function encodeHash(text, key = ServiceKey) {
 }
 
 // Hash code decoder function
-function decodeHash(encoded, key = ServiceKey) {
+function decodeHash(encoded, key = "ILoveRussianGirl") {
   const text = atob(encoded);
   return [...text].map((c, i) => 
     String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
@@ -77,7 +77,7 @@ export default {
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-      const key = EncodeText(encodeHash(expiresAt), ServiceKey);
+      const key = EncodeText(encodeHash(expiresAt.toString()), ServiceKey);
       
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
