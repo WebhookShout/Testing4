@@ -91,6 +91,7 @@ export default {
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
       });
+    }
 
     return new Response("404: Not found", { status: 404 });
   }
