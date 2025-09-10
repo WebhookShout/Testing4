@@ -48,6 +48,40 @@ function DecodeText(encoded, key) {
 }
 //--
 
+
+// Encode string → base62 short code function
+function encodeString(str) {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let num = 0;
+  for (let i = 0; i < str.length; i++) {
+    num = num * 256 + str.charCodeAt(i); // pack chars into number
+  }
+  let encoded = "";
+  const base = alphabet.length;
+  while (num > 0) {
+    encoded = alphabet[num % base] + encoded;
+    num = Math.floor(num / base);
+  }
+  return encoded.padStart(5, "A").slice(0, 8); // force 5–8 chars
+}
+
+// Decode short code → original string function
+function decodeString(code) {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const base = alphabet.length;
+  let num = 0;
+  for (let i = 0; i < code.length; i++) {
+    num = num * base + alphabet.indexOf(code[i]);
+  }
+  let chars = [];
+  while (num > 0) {
+    chars.unshift(String.fromCharCode(num % 256));
+    num = Math.floor(num / 256);
+  }
+  return chars.join("");
+}
+
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -58,7 +92,7 @@ export default {
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-      const key = EncodeText(expiresAt, ServiceKey);
+      const key = EncodeText(encodeString(expiresAt), ServiceKey);
       
       return new Response(key, {
         headers: { "Content-Type": "text/plain" }
