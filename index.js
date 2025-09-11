@@ -228,11 +228,19 @@ export default {
       const firebaseData = await firebaseRes.json();
       
       if (key in githubData) {
-        return new Response(DecodeText(githubData[key].message, ServiceKey), {
+        let expired = false
+        if (Number(DecodeText(githubData[key].message, ServiceKey)) <= getcurrentTimestamp()) {
+          expired = true
+        }
+        return new Response(expired, {
           headers: { "Content-Type": "text/plain" }
         });
       } else {
-        return new Response(DecodeText(firebaseData.message, ServiceKey), {
+        let expired = false
+        if (Number(DecodeText(DecodeText(firebaseData.message, ServiceKey)) <= getcurrentTimestamp()) {
+          expired = true
+        }
+        return new Response(expired, {
           headers: { "Content-Type": "text/plain" }
         });
       }
