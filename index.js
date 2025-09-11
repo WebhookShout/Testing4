@@ -1,7 +1,8 @@
 const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 const HashCode_Database = "https://hash-code-20ecd-default-rtdb.firebaseio.com/";
 const HashCode_SavedData = "https://raw.githubusercontent.com/MainScripts352/Database/refs/heads/main/Hash%20Code%20Database";
-
+const HashCode_DatabseKey = "hxCx9yTnOpdtbAWq5hk1ssNVFHYb6NQCR1HacMis";
+  
 //-- Encode Decode Word Function
 const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 function toBase32(bytes) {
@@ -91,10 +92,12 @@ export default {
     // Create Key (always expires in 24h)
     if (path[0] === "create" && method === "POST") {
       const encodedkey = EncodeText(getTimestamp().toString(), ServiceKey);
-      const key = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
-
+      const hashencoded = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
+      const hash_data = await hashencoded.json();
+      const key = hash_data.Digest;
+        
       // Put Hash Data in Hash code Database
-      const response = await fetch(`${HashCode_Database}${key}.json`, {
+      const response = await fetch(`${HashCode_Database}${key}.json?auth=${HashCode_DatabseKey}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: encodedkey, type: "MD5" })
