@@ -1,7 +1,6 @@
 const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 const HashCode_Database = "https://hash-code-20ecd-default-rtdb.firebaseio.com/";
 const HashCode_SavedData = "https://raw.githubusercontent.com/MainScripts352/Database/refs/heads/main/Hash%20Code%20Database";
-const HashCode_DatabseKey = "hxCx9yTnOpdtbAWq5hk1ssNVFHYb6NQCR1HacMis";
   
 //-- Encode Decode Word Function
 const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
