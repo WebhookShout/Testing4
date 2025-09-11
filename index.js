@@ -118,8 +118,8 @@ export default {
       const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
       const firebaseData = await firebaseRes.json();
       
-      const data = { ...(firebaseData || {}), ...(githubData || {}) };
-
+      const data = Object.assign({}, githubData || {}, firebaseData || {});
+      
       return new Response(DecodeText(data.message, ServiceKey), {
         headers: { "Content-Type": "text/plain" }
       });
