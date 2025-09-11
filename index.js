@@ -237,6 +237,13 @@ export default {
       }
     }
 
+    // test domain
+    if (path[0] === "testing") {
+      return new Response(domain, {
+        headers: { "Content-Type": "text/plain" }
+      });
+    }
+
     return new Response("404: Not found", { status: 404 });
   }
 };
