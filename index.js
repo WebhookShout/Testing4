@@ -237,20 +237,13 @@ export default {
         });
       } else {
         let expired = false
-        if (Number(DecodeText(DecodeText(firebaseData.message, ServiceKey)) <= getcurrentTimestamp()) {
+        if (Number(DecodeText(firebaseData.message, ServiceKey)) <= getcurrentTimestamp()) {
           expired = true
         }
         return new Response(expired, {
           headers: { "Content-Type": "text/plain" }
         });
       }
-    }
-
-    // test domain
-    if (path[0] === "testing") {
-      return new Response(`${domain}/${url.pathname.slice(1)}`, {
-        headers: { "Content-Type": "text/plain" }
-      });
     }
 
     return new Response("404: Not found", { status: 404 });
