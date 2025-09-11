@@ -51,23 +51,6 @@ function DecodeText(encoded, key) {
 //--
 
 
-// Hash code encoder function
-function encodeHash(text, key = "ILoveRussianGirl") {
-  return btoa(
-    [...text].map((c, i) => 
-      String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
-    ).join("")
-  );
-}
-
-// Hash code decoder function
-function decodeHash(encoded, key = "ILoveRussianGirl") {
-  const text = atob(encoded);
-  return [...text].map((c, i) => 
-    String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
-  ).join("");
-}
-
 // Get Date Timestamp function
 function getTimestamp() {
   const now = new Date();
