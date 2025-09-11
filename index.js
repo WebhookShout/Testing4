@@ -111,6 +111,16 @@ export default {
     // Check key
     if (path[0] === "check" && path[1]) {
       const key = path[1];
+
+      const firebaseRes = await fetch(HashCode_Database);
+      const firebaseData = await firebaseRes.json();
+      const githubRes = await fetch(HashCode_SavedData);
+      const githubData = await githubRes.json();
+      const data = { ...firebaseData, ...githubData };
+
+      if (!(key in data)) {
+        return new Response("404: Not found", { status: 404 });
+      }
       
       return new Response(DecodeText(key, ServiceKey), {
         headers: { "Content-Type": "text/plain" }
