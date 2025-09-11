@@ -118,11 +118,6 @@ export default {
       const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
       const firebaseRaw = await firebaseRes.json();
       const firebaseData = firebaseRaw || {};
-
-      // If Firebase returns null, replace with empty object
-      if (firebaseData === null) {
-        firebaseData = {};
-      }
       
       const data = { ...firebaseData, ...githubData };
 
