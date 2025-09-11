@@ -96,7 +96,7 @@ export default {
       const key = hash_data.Digest;
 
       // Detect if Encoded Ip didn't match
-      if (ip !== atob(path[1]) {
+      if (ip !== atob(path[1])) {
         return new Response("403: Request Denied, Don't turn off your internet during getting key.", { status: 403 });
       }
       
