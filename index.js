@@ -226,24 +226,20 @@ export default {
   
       const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
       const firebaseData = await firebaseRes.json();
-      
+
+      let valid = false
       if (key in githubData) {
-        let expired = false
-        if (Number(DecodeText(githubData[key].message, ServiceKey)) <= getcurrentTimestamp()) {
-          expired = true
+        if (Number(DecodeText(githubData[key].message, ServiceKey)) >= getcurrentTimestamp()) {
+          valid = true
         }
-        return new Response(expired, {
-          headers: { "Content-Type": "text/plain" }
-        });
       } else {
-        let expired = false
-        if (Number(DecodeText(firebaseData.message, ServiceKey)) <= getcurrentTimestamp()) {
-          expired = true
+        if (Number(DecodeText(firebaseData.message, ServiceKey)) >= getcurrentTimestamp()) {
+          valid = true
         }
-        return new Response(expired, {
-          headers: { "Content-Type": "text/plain" }
-        });
       }
+      return new Response(valid, {
+        headers: { "Content-Type": "text/plain" }
+      });
     }
 
     return new Response("404: Not found", { status: 404 });
