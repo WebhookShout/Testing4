@@ -79,6 +79,7 @@ function getcurrentTimestamp() {
 export default {
   async fetch(request) {
     const url = new URL(request.url);
+    const domain = url.origin; // get service full link
     const path = url.pathname.split("/").filter(Boolean);
     const method = request.method;
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
