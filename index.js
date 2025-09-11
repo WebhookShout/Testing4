@@ -97,7 +97,7 @@ export default {
       const key = hash_data.Digest;
         
       // Put Hash Data in Hash code Database
-      const response = await fetch(`${HashCode_Database}${key}.json?auth=${HashCode_DatabseKey}`, {
+      const response = await fetch(`${HashCode_Database}${key}.json`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: encodedkey, type: "MD5" })
