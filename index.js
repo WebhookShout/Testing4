@@ -91,7 +91,7 @@ export default {
       const key = hash_data.Digest;
 
       // Detect if link is expired
-      if (getcurrentTimestamp() >== atob(decodeURIComponent(path[1]))) {
+      if (getcurrentTimestamp() >= atob(decodeURIComponent(path[1]))) {
         return new Response("403: Invalid Link or Expired!", { status: 403 });
       }
         
