@@ -84,14 +84,19 @@ export default {
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
 
     // Create Key (always expires in 24h)
-    if (path[0] === "create" && path[1] && method === "GET") {
+    if (path[0] === "create" && path[1] && path[2] && method === "GET") {
       const encodedkey = EncodeText(getTimestamp().toString(), ServiceKey);
       const hashencoded = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
       const hash_data = await hashencoded.json();
       const key = hash_data.Digest;
 
+      // Detect if ip is didn't match
+      if (ip !== atob(decodeURIComponent(path[1]))) {
+        return new Response("403: Invalid Link or Expired", { status: 403 });
+      }
+      
       // Detect if link is expired
-      if (getcurrentTimestamp() >= atob(decodeURIComponent(path[1]))) {
+      if (getcurrentTimestamp() >= atob(decodeURIComponent(path[2]))) {
         return new Response("403: Invalid Link or Expired!", { status: 403 });
       }
         
