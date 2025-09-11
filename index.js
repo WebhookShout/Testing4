@@ -84,7 +84,7 @@ export default {
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
 
     // Create Key (always expires in 24h)
-    if (path[0] === "create" && path[1] && method === "POST") {
+    if (path[0] === "create" && path[1] && method === "GET") {
       const encodedkey = EncodeText(getTimestamp().toString(), ServiceKey);
       const hashencoded = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
       const hash_data = await hashencoded.json();
@@ -102,9 +102,111 @@ export default {
         body: JSON.stringify({ message: encodedkey, type: "MD5" })
       });
       //
+
+      const html = `
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Show Key</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 5;
+      background: #000;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #fff;
+    }
+
+    .container {
+      text-align: center;
+      padding: 40px 60px;
+      border: 1px solid #fff;
+      border-radius: 10px;
+      background: #111;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+      color: #aaa;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: #fff;
+      margin: 15px auto 25px;
+    }
+
+    .key-text {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 25px;
+      word-break: break-all;
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Your Access Key</div>
+    <div class="divider"></div>
+    <div class="key-text" id="keyText">KEY_${key}</div>
+    <button id="copyBtn" onclick="copyKey()">Copy Key</button>
+  </div>
+
+  <script>
+    function copyKey() {
+      const keyText = document.getElementById("keyText").innerText;
+      const copyBtn = document.getElementById("copyBtn");
+
+      // Try modern clipboard API
+      navigator.clipboard.writeText(keyText).then(() => {
+        copyBtn.innerText = "Copied!";
+        setTimeout(() => copyBtn.innerText = "Copy Key", 2000);
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement("textarea");
+        textarea.value = keyText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+
+        copyBtn.innerText = "Copied!";
+        setTimeout(() => copyBtn.innerText = "Copy Key", 2000);
+      });
+    }
+  </script>
+</body>
+</html>`;
       
-      return new Response(key, {
-        headers: { "Content-Type": "text/plain" }
+      return new Response(html, {
+        headers: { "Content-Type": "text/html" }
       });
     }
 
