@@ -118,11 +118,15 @@ export default {
       const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
       const firebaseData = await firebaseRes.json();
       
-      const data = Object.assign({}, githubData || {}, firebaseData || {});
-      
-      return new Response(DecodeText(data.message, ServiceKey), {
-        headers: { "Content-Type": "text/plain" }
-      });
+      if (key in githubData) {
+        return new Response(DecodeText(githubData[key].message, ServiceKey), {
+          headers: { "Content-Type": "text/plain" }
+        });
+      } else {
+        return new Response(DecodeText(firebaseData.message, ServiceKey), {
+          headers: { "Content-Type": "text/plain" }
+        });
+      }
     }
 
     return new Response("404: Not found", { status: 404 });
