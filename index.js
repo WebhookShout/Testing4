@@ -212,8 +212,9 @@ export default {
 
     // Check key
     if (path[0] === "check" && path[1] && method === "GET") {
-      const key = path[1];
-
+      let key = path[1];
+      key = key.replace("KEY_", "");
+      
       const githubRes = await fetch(HashCode_SavedData);
       const githubData = await githubRes.json();
   
