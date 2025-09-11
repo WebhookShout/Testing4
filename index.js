@@ -115,9 +115,8 @@ export default {
       const githubRes = await fetch(HashCode_SavedData);
       const githubData = await githubRes.json();
   
-      const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
-      const firebaseRaw = await firebaseRes.json();
-      const firebaseData = firebaseRaw || {};
+      const firebaseRes = await fetch(`${HashCode_Database}.json`);
+      const firebaseData = await firebaseRes.json();
       
       const data = { ...firebaseData, ...githubData };
 
