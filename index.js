@@ -121,8 +121,8 @@ export default {
       if (!(key in data)) {
         return new Response("404: Not found", { status: 404 });
       }
-      
-      return new Response(DecodeText(key, ServiceKey), {
+
+      return new Response(DecodeText(key.message, ServiceKey), {
         headers: { "Content-Type": "text/plain" }
       });
     }
