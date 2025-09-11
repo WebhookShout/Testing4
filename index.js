@@ -112,21 +112,15 @@ export default {
     if (path[0] === "check" && path[1]) {
       const key = path[1];
 
-      const githubRes = await fetch(HashCode_SavedData);
-      const githubData = await githubRes.json();
+      //const githubRes = await fetch(HashCode_SavedData);
+      //const githubData = await githubRes.json();
 
       const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
       const firebaseData = await firebaseRes.json();
       
-      if (key in githubData) {
-        return new Response(DecodeText(githubData[key].message, ServiceKey), {
-          headers: { "Content-Type": "text/plain" }
-        });
-      } else {
-        return new Response(DecodeText(firebaseData[key].message, ServiceKey), {
-          headers: { "Content-Type": "text/plain" }
-        });
-      }
+      return new Response(firebaseData[key].message, {
+        headers: { "Content-Type": "text/plain" }
+      });
     }
 
     return new Response("404: Not found", { status: 404 });
