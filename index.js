@@ -89,12 +89,17 @@ export default {
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
 
     // Create Key (always expires in 24h)
-    if (path[0] === "create" && method === "POST") {
+    if (path[0] === "create" && path[1] && method === "POST") {
       const encodedkey = EncodeText(getTimestamp().toString(), ServiceKey);
       const hashencoded = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
       const hash_data = await hashencoded.json();
       const key = hash_data.Digest;
-        
+
+      // Detect if Encoded Ip didn't match
+      if (ip !== atob(path[1]) {
+        return new Response("403: Request Denied, Don't turn off your internet during getting key.", { status: 403 });
+      }
+      
       // Put Hash Data in Hash code Database
       const response = await fetch(`${HashCode_Database}${key}.json`, {
         method: "PUT",
