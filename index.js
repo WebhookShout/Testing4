@@ -112,10 +112,17 @@ export default {
     if (path[0] === "check" && path[1]) {
       const key = path[1];
 
-      const firebaseRes = await fetch(HashCode_Database);
-      const firebaseData = await firebaseRes.json();
       const githubRes = await fetch(HashCode_SavedData);
       const githubData = await githubRes.json();
+  
+      const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
+      const firebaseData = await firebaseRes.json();
+
+      // If Firebase returns null, replace with empty object
+      if (firebaseData === null) {
+        firebaseData = {};
+      }
+      
       const data = { ...firebaseData, ...githubData };
 
       if (!(key in data)) {
