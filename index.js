@@ -240,7 +240,7 @@ export default {
 
     // test domain
     if (path[0] === "testing") {
-      return new Response(domain, {
+      return new Response(`${domain}/${url.pathname.slice(1)}`, {
         headers: { "Content-Type": "text/plain" }
       });
     }
