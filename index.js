@@ -92,7 +92,7 @@ export default {
 
       // Detect if ip is didn't match
       if (ip !== atob(decodeURIComponent(path[1]))) {
-        return new Response("403: Invalid Link or Expired", { status: 403 });
+        return new Response("403: Request Denied, don't turn off your internet while getting key.", { status: 403 });
       }
       
       // Detect if link is expired
