@@ -83,7 +83,6 @@ export default {
       }
       
       // Detect if link is expired
-      return new Response(`${getcurrentTimestamp()}\n${getTimestamp()}`, { status: 403 });
       if (getcurrentTimestamp() >= Number(atob(decodeURIComponent(path[2])))) {
         return new Response("403: Invalid Link or Expired!", { status: 403 });
       }
