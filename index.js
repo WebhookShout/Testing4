@@ -228,6 +228,13 @@ export default {
       });
     }
 
+    // Check Service Status
+    if (path[0] === "status" && method === "GET") {
+      return new Response(true, {
+        headers: { "Content-Type": "text/plain" }
+      });
+    }
+    
     return new Response("404: Not found", { status: 404 });
   }
 };
