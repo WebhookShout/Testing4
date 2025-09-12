@@ -53,12 +53,12 @@ function DecodeText(encoded, key) {
 
 // Get Date Timestamp function with 24 hours
 function getTimestamp() {
-  return `${Date.now() + (24 * 60 * 60 * 1000)}`;
+  return Date.now() + (24 * 60 * 60 * 1000);
 }
 
 // Get Current Date Timestamp function
 function getcurrentTimestamp() {
-  return `${Date.now()}`;
+  return Date.now();
 }
 
 
