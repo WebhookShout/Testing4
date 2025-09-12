@@ -218,7 +218,7 @@ export default {
         if (Number(DecodeText(githubData[key].message, ServiceKey)) >= getcurrentTimestamp()) {
           valid = true
         }
-      } elseif (key in firebaseData) {
+      } else if (key in firebaseData) {
         if (Number(DecodeText(firebaseData.message, ServiceKey)) >= getcurrentTimestamp()) {
           valid = true
         }
