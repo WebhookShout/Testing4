@@ -52,37 +52,45 @@ function DecodeText(encoded, key) {
 //--
 
 
-const SYSTEM_KEY = "jamx-wpf4-20gn-920g-Il0v3-Russia-382g";
-
 function _getKeyBytes(key) {
-  if (typeof TextEncoder !== "undefined") {
-    return new TextEncoder().encode(key);
-  } else {
-    return Buffer.from(key, "utf8");
-  }
+  return new TextEncoder().encode(key);
 }
 
-function _stringToBytes(str) {
-  if (typeof TextEncoder !== "undefined") {
-    return new TextEncoder().encode(str);
-  } else {
-    return Buffer.from(str, "utf8");
+function _bytesToString(bytes) {
+  if (typeof TextDecoder !== "undefined") {
+    return new TextDecoder().decode(bytes);
   }
+  return Buffer.from(bytes).toString("utf-8");
 }
 
-function encodeWithSystemKey(msg) {
-  if (typeof msg !== "string") throw new TypeError("msg must be a string");
-  const msgBytes = _stringToBytes(msg);
+function encodeWithSystemKey(message) {
+  if (typeof message !== "string") throw new TypeError("message must be a string");
+  const keyBytes = _getKeyBytes(SYSTEM_KEY);
+  const msgBytes = new TextEncoder().encode(message);
+  const keyLen = keyBytes.length;
+  let hex = "";
+  for (let i = 0; i < msgBytes.length; i++) {
+    const xored = msgBytes[i] ^ keyBytes[i % keyLen];
+    hex += xored.toString(16).padStart(2, "0");
+  }
+  return hex;
+}
+
+function decodeWithSystemKey(hexstr) {
+  if (typeof hexstr !== "string") throw new TypeError("hexstr must be a string");
+  if (hexstr.length % 2 !== 0) throw new Error("Invalid hex string length");
   const keyBytes = _getKeyBytes(SYSTEM_KEY);
   const keyLen = keyBytes.length;
-  const out = new Array(msgBytes.length);
-  for (let i = 0; i < msgBytes.length; i++) {
-    const b = msgBytes[i];
+  const byteLen = hexstr.length / 2;
+  let outBytes = new Uint8Array(byteLen);
+  for (let i = 0; i < byteLen; i++) {
+    const pair = hexstr.substr(i * 2, 2);
+    const num = parseInt(pair, 16);
+    if (Number.isNaN(num)) throw new Error("Invalid hex characters in input");
     const k = keyBytes[i % keyLen];
-    const x = b ^ k;
-    out[i] = x.toString(16).padStart(2, "0");
+    outBytes[i] = num ^ k;
   }
-  return out.join("");
+  return _bytesToString(outBytes);
 }
 
 
@@ -206,6 +214,13 @@ export default {
       });
     }
 
+    // Check Key
+    if (path[0] === "check" && path[1] && method === "GET") {
+      let key = path[1];
+      key = key.replace("KEY_", "");
+      return decodeWithSystemKey(key);
+    }
+    
     // Check Service Status
     if (path[0] === "status" && method === "GET") {
       return new Response(true, {
