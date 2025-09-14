@@ -52,14 +52,34 @@ function DecodeText(encoded, key) {
 
 
 // Get Date Timestamp function with 24 hours
-function getTimestamp() {
-  return Date.now() + (24 * 60 * 60 * 1000);
+async function getTimestamp(ip) {
+  const res = await fetch(`http://ip-api.com/json/${ip}`);
+  const data = await res.json();
+  if (data.status !== "success") {
+    throw new Error("IP lookup failed: " + (data.message || "unknown"));
+  }
+  const tz = data.timezone || "UTC";
+  const now = new Date();
+  const localString = now.toLocaleString("en-US", { timeZone: tz });
+  const localDate = new Date(localString);
+  return Math.floor(localDate.getTime() / 1000) + 24 * 60 * 60;
 }
 
+
 // Get Current Date Timestamp function
-function getcurrentTimestamp() {
-  return Date.now();
+async function getcurrentTimestamp(ip) {
+  const res = await fetch(`http://ip-api.com/json/${ip}`);
+  const data = await res.json();
+  if (data.status !== "success") {
+    throw new Error("IP lookup failed: " + (data.message || "unknown"));
+  }
+  const tz = data.timezone || "UTC";
+  const now = new Date();
+  const localString = now.toLocaleString("en-US", { timeZone: tz });
+  const localDate = new Date(localString);
+  return Math.floor(localDate.getTime() / 1000);
 }
+
 
 
 export default {
@@ -72,13 +92,13 @@ export default {
 
     // Create Key (always expires in 24h)
     if (path[0] === "create" && path[1] && method === "GET") {
-      const encodedkey = EncodeText(getTimestamp().toString(), ServiceKey);
+      const encodedkey = EncodeText(getTimestamp(ip).toString(), ServiceKey);
       const hashencoded = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
       const hash_data = await hashencoded.json();
       const key = hash_data.Digest;
       
       // Detect if link is expired
-      if (getcurrentTimestamp() >= Number(atob(decodeURIComponent(path[1])))) {
+      if (getcurrentTimestamp(ip) >= Number(atob(decodeURIComponent(path[1])))) {
         return new Response("403: Invalid Link or Expired!", { status: 403 });
       }
         
@@ -210,11 +230,11 @@ export default {
 
       let valid = false
       if (key in githubData) {
-        if (Number(DecodeText(githubData[key].message, ServiceKey)) >= getcurrentTimestamp()) {
+        if (Number(DecodeText(githubData[key].message, ServiceKey)) >= getcurrentTimestamp(ip)) {
           valid = true
         }
       } else if (firebaseData !== null) {
-        if (Number(DecodeText(firebaseData.message, ServiceKey)) >= getcurrentTimestamp()) {
+        if (Number(DecodeText(firebaseData.message, ServiceKey)) >= getcurrentTimestamp(ip)) {
           valid = true
         }
       }
