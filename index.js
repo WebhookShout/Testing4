@@ -218,7 +218,8 @@ export default {
     if (path[0] === "check" && path[1] && method === "GET") {
       let key = path[1];
       key = key.replace("KEY_", "");
-      return new Response(decodeWithSystemKey(key), {
+      const enc = encodeWithSystemKey(key);
+      return new Response(`${enc}\n${decodeWithSystemKey(enc)}`, {
         headers: { "Content-Type": "text/plain" }
       });
     }
