@@ -1,7 +1,8 @@
 const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 const HashCode_Database = "https://hash-code-20ecd-default-rtdb.firebaseio.com/";
 const HashCode_SavedData = "https://raw.githubusercontent.com/MainScripts352/Database/refs/heads/main/Hash%20Code%20Database";
-  
+const SYSTEM_KEY = "jamx-wpf4-20gn-920g-Il0v3-Russia-382g";
+
 //-- Encode Decode Word Function
 const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 function toBase32(bytes) {
@@ -51,35 +52,38 @@ function DecodeText(encoded, key) {
 //--
 
 
-// Get Date Timestamp function with 24 hours
-async function getTimestamp(ip) {
-  const res = await fetch(`http://ip-api.com/json/${ip}`);
-  const data = await res.json();
-  if (data.status !== "success") {
-    throw new Error("IP lookup failed: " + (data.message || "unknown"));
+const SYSTEM_KEY = "jamx-wpf4-20gn-920g-Il0v3-Russia-382g";
+
+function _getKeyBytes(key) {
+  if (typeof TextEncoder !== "undefined") {
+    return new TextEncoder().encode(key);
+  } else {
+    return Buffer.from(key, "utf8");
   }
-  const tz = data.timezone || "UTC";
-  const now = new Date();
-  const localString = now.toLocaleString("en-US", { timeZone: tz });
-  const localDate = new Date(localString);
-  return Math.floor(localDate.getTime() / 1000) + 24 * 60 * 60;
 }
 
-
-// Get Current Date Timestamp function
-async function getcurrentTimestamp(ip) {
-  const res = await fetch(`http://ip-api.com/json/${ip}`);
-  const data = await res.json();
-  if (data.status !== "success") {
-    throw new Error("IP lookup failed: " + (data.message || "unknown"));
+function _stringToBytes(str) {
+  if (typeof TextEncoder !== "undefined") {
+    return new TextEncoder().encode(str);
+  } else {
+    return Buffer.from(str, "utf8");
   }
-  const tz = data.timezone || "UTC";
-  const now = new Date();
-  const localString = now.toLocaleString("en-US", { timeZone: tz });
-  const localDate = new Date(localString);
-  return Math.floor(localDate.getTime() / 1000);
 }
 
+function encodeWithSystemKey(msg) {
+  if (typeof msg !== "string") throw new TypeError("msg must be a string");
+  const msgBytes = _stringToBytes(msg);
+  const keyBytes = _getKeyBytes(SYSTEM_KEY);
+  const keyLen = keyBytes.length;
+  const out = new Array(msgBytes.length);
+  for (let i = 0; i < msgBytes.length; i++) {
+    const b = msgBytes[i];
+    const k = keyBytes[i % keyLen];
+    const x = b ^ k;
+    out[i] = x.toString(16).padStart(2, "0");
+  }
+  return out.join("");
+}
 
 
 export default {
@@ -92,23 +96,8 @@ export default {
 
     // Create Key (always expires in 24h)
     if (path[0] === "create" && path[1] && method === "GET") {
-      const encodedkey = EncodeText(getTimestamp(ip).toString(), ServiceKey);
-      const hashencoded = await fetch(`https://api.hashify.net/hash/md5/hex?value=${encodedkey}`);
-      const hash_data = await hashencoded.json();
-      const key = hash_data.Digest;
-      
-      // Detect if link is expired
-      if (getcurrentTimestamp(ip) >= Number(atob(decodeURIComponent(path[1])))) {
-        return new Response("403: Invalid Link or Expired!", { status: 403 });
-      }
-        
-      // Put Hash Data in Hash code Database
-      const response = await fetch(`${HashCode_Database}${key}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: encodedkey, type: "MD5" })
-      });
-      //
+      const encodedkey = atob(path[1]);
+      const key = encodeWithSystemKey(String(encodedkey));
 
       const html = `
       <!DOCTYPE html>
@@ -214,32 +203,6 @@ export default {
       
       return new Response(html, {
         headers: { "Content-Type": "text/html" }
-      });
-    }
-
-    // Check key
-    if (path[0] === "check" && path[1] && method === "GET") {
-      let key = path[1];
-      key = key.replace("KEY_", "");
-      
-      const githubRes = await fetch(HashCode_SavedData);
-      const githubData = await githubRes.json();
-  
-      const firebaseRes = await fetch(`${HashCode_Database}${key}.json`);
-      const firebaseData = await firebaseRes.json();
-
-      let valid = false
-      if (key in githubData) {
-        if (Number(DecodeText(githubData[key].message, ServiceKey)) >= getcurrentTimestamp(ip)) {
-          valid = true
-        }
-      } else if (firebaseData !== null) {
-        if (Number(DecodeText(firebaseData.message, ServiceKey)) >= getcurrentTimestamp(ip)) {
-          valid = true
-        }
-      }
-      return new Response(valid, {
-        headers: { "Content-Type": "text/plain" }
       });
     }
 
