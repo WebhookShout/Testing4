@@ -218,7 +218,9 @@ export default {
     if (path[0] === "check" && path[1] && method === "GET") {
       let key = path[1];
       key = key.replace("KEY_", "");
-      return decodeWithSystemKey(key);
+      return new Response(decodeWithSystemKey(key), {
+        headers: { "Content-Type": "text/plain" }
+      });
     }
     
     // Check Service Status
