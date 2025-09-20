@@ -114,7 +114,7 @@ export default {
 
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
-      return Response.redirect(`${domain}/create/${btoa(getTimestamp())}`, 302);
+      return Response.redirect(`${domain}/create/${btoa(getTimestamp(1))}`, 302);
     }
     
     // Create Key (always expires in 24h)
