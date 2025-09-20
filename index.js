@@ -104,7 +104,7 @@ export default {
 
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
-      window.location.replace(`${domain}/status`);
+      return Response.redirect(`${domain}/status`, 302);
     }
     
     // Create Key (always expires in 24h)
