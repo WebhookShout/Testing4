@@ -104,7 +104,11 @@ export default {
 
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
-      return Response.redirect(`${domain}/status`, 302);
+      return Response.redirect(`${domain}/status`, 302, headers: {
+        "content-type": "text/html;charset=UTF-8",
+        "referrer-policy": "no-referrer",
+        "cache-control": "no-store"
+      });
     }
     
     // Create Key (always expires in 24h)
