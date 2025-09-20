@@ -102,6 +102,11 @@ export default {
     const method = request.method;
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
 
+    // Make Key Starter
+    if (path[0] === "make" && method === "GET") {
+      window.replace(`${domain}create/${btoa(9999999999)}`);
+    }
+    
     // Create Key (always expires in 24h)
     if (path[0] === "create" && path[1] && method === "GET") {
       const encodedkey = atob(path[1]);
