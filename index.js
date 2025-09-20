@@ -93,6 +93,16 @@ function decodeWithSystemKey(hexstr) {
   return _bytesToString(outBytes);
 }
 
+// Get timestamp with days expiration
+async function getTimestamp(days = 0) {
+  const response = await fetch("http://worldclockapi.com/api/json/utc/now");
+  const data = await response.json();
+  const time = data.currentFileTime;
+  const timeMs = Math.floor(time / 10000);
+  const addedMs = days * 24 * 60 * 60 * 1000;
+  return timeMs + addedMs;
+}
+
 
 export default {
   async fetch(request) {
@@ -104,7 +114,7 @@ export default {
 
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
-      return Response.redirect(`${domain}/status`, 302);
+      return Response.redirect(`${domain}/create/${btoa(getTimestamp())}`, 302);
     }
     
     // Create Key (always expires in 24h)
