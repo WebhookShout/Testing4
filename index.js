@@ -104,7 +104,7 @@ export default {
 
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
-      window.replace(`${domain}create/${btoa(9999999999)}`);
+      window.replace(`${domain}/status`);
     }
     
     // Create Key (always expires in 24h)
