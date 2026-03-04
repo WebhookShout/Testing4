@@ -12,13 +12,12 @@ function getTimestamp(days = 0) {
 
 // Add Data to Database function
 async function AddData(key, time) {
-  const body = {
-    expiration: time
-  }
   const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      expiration: time 
+    })
   })
 }
 
