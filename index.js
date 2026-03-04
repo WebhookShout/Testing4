@@ -16,6 +16,8 @@ async function AddData(key, time) {
     time: time
   }
   const res = await fetch(`${Database_Link}/${key}.json?auth=${Database_Key}`, {
+    method: 'PUT',
+    headers: {"Content-Type": "application/json"},
     body: JSON.stringify(body)
   })
 }
