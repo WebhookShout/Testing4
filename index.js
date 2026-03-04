@@ -1,54 +1,6 @@
-const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com/"
-const SYSTEM_KEY = "02ks-30nd-kanc-lwn5-Il0v3-Russia-382g";
-
-//-- Encode Decode Word Function
-const base32Alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-function toBase32(bytes) {
-  let bits = 0, value = 0, output = '';
-  for (let byte of bytes) {
-    value = (value << 8) | byte;
-    bits += 8;
-    while (bits >= 5) {
-      output += base32Alphabet[(value >>> (bits - 5)) & 31];
-      bits -= 5;
-    }
-  }
-  if (bits > 0) {
-    output += base32Alphabet[(value << (5 - bits)) & 31];
-  }
-  return output;
-}
-
-function fromBase32(str) {
-  let bits = 0, value = 0, output = [];
-  for (let c of str.toUpperCase()) {
-    const index = base32Alphabet.indexOf(c);
-    if (index === -1) continue;
-    value = (value << 5) | index;
-    bits += 5;
-    if (bits >= 8) {
-      output.push((value >>> (bits - 8)) & 255);
-      bits -= 8;
-    }
-  }
-  return new Uint8Array(output);
-}
-
-function EncodeText(text, key) {
-  const data = new TextEncoder().encode(text);
-  const keyData = new TextEncoder().encode(key);
-  const encrypted = data.map((b, i) => b ^ keyData[i % keyData.length]);
-  return toBase32(encrypted);
-}
-
-function DecodeText(encoded, key) {
-  const data = fromBase32(encoded);
-  const keyData = new TextEncoder().encode(key);
-  const decrypted = data.map((b, i) => b ^ keyData[i % keyData.length]);
-  return new TextDecoder().decode(new Uint8Array(decrypted));
-}
-//--
+const Database_Key = "xTlsK85HfkZMWbR6CRYIx7olQ6pnVEAp3HYVGcnP"
+const SYSTEM_KEY = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 
 
 function _getKeyBytes(key) {
