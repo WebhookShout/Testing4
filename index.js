@@ -161,12 +161,11 @@ export default {
       let key = path[1];
       key = key.replace("KEY_", "");
       const res = await fetch(`${Database_Link}/Keys/${key}.json`);
-      const result = await res.text();
-      if (result === 'null') {
+      const result = await res.json();
+      if (result === null) {
         return new Response("403: Invalid Key", { status: 403 });
       }
-      const json = await result.json();
-      const expiration = json.expiration;
+      const expiration = result.expiration;
       const time = getTimestamp();
       if (Number(expiration) < time) {
         ctx.waitUntil(RemoveData(key)); // code below it will run imidietly without waiting it finished
