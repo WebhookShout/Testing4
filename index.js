@@ -100,6 +100,7 @@ function getTimestamp(days = 0) {
 }
 
 
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -251,7 +252,7 @@ export default {
     }
 
     if (path[0] === "testing") {
-      const text = crypto.randomUUID();
+      const text = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
       return new Response(text, {
         headers: { "Content-Type": "text/plain" }
       });
