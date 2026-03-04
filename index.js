@@ -9,6 +9,15 @@ function getTimestamp(days = 0) {
   return now + add;
 }
 
+// Remove Data from Database function
+async function RemoveData(key) {
+  const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
+    method: 'DELETE',
+    headers: {"Content-Type": "application/json"},
+    body: null
+  })
+}
+
 // Add Data to Database function
 async function AddData(key, time) {
   const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
@@ -151,7 +160,16 @@ export default {
     if (path[0] === "check" && path[1] && method === "GET") {
       let key = path[1];
       key = key.replace("KEY_", "");
-      return new Response(decodeWithSystemKey(key), {
+      const res = await fetch(`${Database_Link}/Keys/${key}.json`);
+      const result = await res.text();
+      if (result === 'null') {
+        return new Response("403: Invalid Key", { status: 403 });
+      }
+      const time = getTimestamp();
+      if (Number(result) < time) {
+        ctx.waitUntil(RemoveData(key)); // code below it will run imidietly without waiting it finished
+      }
+      return new Response(result, {
         headers: { "Content-Type": "text/plain" }
       });
     }
@@ -171,14 +189,6 @@ export default {
       });
     }
 
-    if (path[0] === "testing") {
-      AddData('hi', 123);
-      const text = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
-      return new Response(text, {
-        headers: { "Content-Type": "text/plain" }
-      });
-    }
-    
     return new Response("404: Not found", { status: 404 });
   }
 };
