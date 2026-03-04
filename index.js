@@ -15,7 +15,7 @@ async function AddData(key, time) {
   const body = {
     time: time
   }
-  const res = await fetch(`${Database_Link}/${Key}.json&auth=${Database_Key}`, {
+  const res = await fetch(`${Database_Link}/${key}.json&auth=${Database_Key}`, {
     body: JSON.stringify(body)
   })
 }
