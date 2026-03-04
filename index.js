@@ -169,8 +169,9 @@ export default {
       const time = getTimestamp();
       if (Number(expiration) < time) {
         ctx.waitUntil(RemoveData(key)); // code below it will run imidietly without waiting it finished
+        return new Response("403: Key Expired", { status: 403 });
       }
-      return new Response(expiration, {
+      return new Response('200: Success', {
         headers: { "Content-Type": "text/plain" }
       });
     }
