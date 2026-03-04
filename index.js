@@ -172,6 +172,7 @@ export default {
     }
 
     if (path[0] === "testing") {
+      AddData('hi', 123);
       const text = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
       return new Response(text, {
         headers: { "Content-Type": "text/plain" }
