@@ -15,7 +15,7 @@ async function AddData(key, time) {
   const body = {
     time: time
   }
-  const res = await fetch(`${Database_Link}/${key}.json?auth=${Database_Key}`, {
+  const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(body)
@@ -35,7 +35,9 @@ export default {
     if (path[0] === "make" && method === "GET") {
       const timestamp = await getTimestamp(1);
       const key = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
-      ctx.waitUntil(AddData(key, timestamp));
+      spawn(async () => {
+        AddData(key, timestamp));
+      });
       return Response.redirect(`${domain}/create/${key}`, 302);
     }
     
