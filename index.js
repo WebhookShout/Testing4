@@ -1,6 +1,5 @@
 const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com"
 const Database_Key = "xTlsK85HfkZMWbR6CRYIx7olQ6pnVEAp3HYVGcnP"
-const SYSTEM_KEY = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 
 
 // Get timestamp with days expiration
