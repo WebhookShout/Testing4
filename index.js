@@ -175,14 +175,6 @@ export default {
         headers: { "Content-Type": "text/plain" }
       });
     }
-
-    // Get Time
-    if (path[0] === "time" && method === "GET") {
-      const time = getTimestamp();
-      return new Response(String(time), {
-        headers: { "Content-Type": "text/plain" }
-      });
-    }
     
     // Check Service Status
     if (path[0] === "status" && method === "GET") {
