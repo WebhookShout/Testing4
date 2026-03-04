@@ -36,7 +36,7 @@ export default {
       const timestamp = await getTimestamp(1);
       const key = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
       spawn(async () => {
-        AddData(key, timestamp));
+        AddData(key, timestamp);
       });
       return Response.redirect(`${domain}/create/${key}`, 302);
     }
