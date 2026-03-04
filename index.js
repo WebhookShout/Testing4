@@ -165,7 +165,7 @@ export default {
       if (result === 'null') {
         return new Response("403: Invalid Key", { status: 403 });
       }
-      result = await.json()
+      result = await result.json()
       result = result.expiration;
       const time = getTimestamp();
       if (Number(result) < time) {
