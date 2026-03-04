@@ -1,48 +1,7 @@
-const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com/"
+const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com"
 const Database_Key = "xTlsK85HfkZMWbR6CRYIx7olQ6pnVEAp3HYVGcnP"
 const SYSTEM_KEY = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
 
-
-function _getKeyBytes(key) {
-  return new TextEncoder().encode(key);
-}
-
-function _bytesToString(bytes) {
-  if (typeof TextDecoder !== "undefined") {
-    return new TextDecoder().decode(bytes);
-  }
-  return Buffer.from(bytes).toString("utf-8");
-}
-
-function encodeWithSystemKey(message) {
-  if (typeof message !== "string") throw new TypeError("message must be a string");
-  const keyBytes = _getKeyBytes(SYSTEM_KEY);
-  const msgBytes = new TextEncoder().encode(message);
-  const keyLen = keyBytes.length;
-  let hex = "";
-  for (let i = 0; i < msgBytes.length; i++) {
-    const xored = msgBytes[i] ^ keyBytes[i % keyLen];
-    hex += xored.toString(16).padStart(2, "0");
-  }
-  return hex;
-}
-
-function decodeWithSystemKey(hexstr) {
-  if (typeof hexstr !== "string") throw new TypeError("hexstr must be a string");
-  if (hexstr.length % 2 !== 0) throw new Error("Invalid hex string length");
-  const keyBytes = _getKeyBytes(SYSTEM_KEY);
-  const keyLen = keyBytes.length;
-  const byteLen = hexstr.length / 2;
-  let outBytes = new Uint8Array(byteLen);
-  for (let i = 0; i < byteLen; i++) {
-    const pair = hexstr.substr(i * 2, 2);
-    const num = parseInt(pair, 16);
-    if (Number.isNaN(num)) throw new Error("Invalid hex characters in input");
-    const k = keyBytes[i % keyLen];
-    outBytes[i] = num ^ k;
-  }
-  return _bytesToString(outBytes);
-}
 
 // Get timestamp with days expiration
 function getTimestamp(days = 0) {
@@ -51,10 +10,19 @@ function getTimestamp(days = 0) {
   return now + add;
 }
 
+// Add Data to Database function
+async function AddData(key, time) {
+  const body = {
+    time: time
+  }
+  const res = await fetch(`${Database_Link}/${Key}.json&auth=${Database_Key}`, {
+    body: JSON.stringify(body)
+  })
+}
 
 
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const domain = url.origin; // get service full link
     const path = url.pathname.split("/").filter(Boolean);
@@ -64,14 +32,14 @@ export default {
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
       const timestamp = await getTimestamp(1);
-      return Response.redirect(`${domain}/create/${btoa(timestamp)}`, 302);
+      const key = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
+      ctx.waitUntil(AddData(key, timestamp));
+      return Response.redirect(`${domain}/create/${key}`, 302);
     }
     
     // Create Key (always expires in 24h)
     if (path[0] === "create" && path[1] && method === "GET") {
-      const encodedkey = atob(path[1]);
-      const key = encodeWithSystemKey(String(encodedkey));
-
+      const key = path[1];
       const html = `
       <!DOCTYPE html>
 <html lang="en">
