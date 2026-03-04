@@ -1,6 +1,5 @@
 const ServiceKey = "44pk-uopl-cVIp-kayv-pQjd-QdG1-Dns1-adO0-russa-1ov3r";
-const HashCode_Database = "https://hash-code-20ecd-default-rtdb.firebaseio.com/";
-const HashCode_SavedData = "https://raw.githubusercontent.com/MainScripts352/Database/refs/heads/main/Hash%20Code%20Database";
+const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com/"
 const SYSTEM_KEY = "02ks-30nd-kanc-lwn5-Il0v3-Russia-382g";
 
 //-- Encode Decode Word Function
@@ -247,6 +246,13 @@ export default {
     // Check Service Status
     if (path[0] === "status" && method === "GET") {
       return new Response(true, {
+        headers: { "Content-Type": "text/plain" }
+      });
+    }
+
+    if (path[0] === "testing") {
+      const text = crypto.randomUUID();
+      return new Response(text, {
         headers: { "Content-Type": "text/plain" }
       });
     }
