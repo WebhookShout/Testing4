@@ -35,9 +35,7 @@ export default {
     if (path[0] === "make" && method === "GET") {
       const timestamp = await getTimestamp(1);
       const key = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
-      spawn(async () => {
-        AddData(key, timestamp);
-      });
+      ctx.waitUntil(AddData(key, timestamp)); // code below it will run imidietly without waiting it finished
       return Response.redirect(`${domain}/create/${key}`, 302);
     }
     
