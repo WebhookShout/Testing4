@@ -207,7 +207,7 @@ export default {
     }
 
     if (path[0] === "testing") {
-      const a = encode('1', ServiceKey);
+      const a = encode('1234567', ServiceKey);
       const b = decode(a, ServiceKey);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
