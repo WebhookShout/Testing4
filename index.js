@@ -1,6 +1,29 @@
-const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com"
-const Database_Key = "xTlsK85HfkZMWbR6CRYIx7olQ6pnVEAp3HYVGcnP"
+const ServiceKey = '30c3f0300fb195503b7e982b3e0b554a';
 
+// Encode function
+function encode(text, key) {
+  let result = "";
+  for (let i = 0; i < text.length; i++) {
+    let charCode = text.charCodeAt(i);
+    let keyCode = key.charCodeAt(i % key.length);
+    let encoded = charCode ^ keyCode; // XOR
+    result += encoded.toString(16).padStart(2, "0"); // hex
+  }
+  return result;
+}
+
+// Decode function
+function decode(hash, key) {
+  let result = "";
+  for (let i = 0; i < hash.length; i += 2) {
+    let hex = hash.substr(i, 2);
+    let code = parseInt(hex, 16);
+    let keyCode = key.charCodeAt((i / 2) % key.length);
+    let decoded = code ^ keyCode;
+    result += String.fromCharCode(decoded);
+  }
+  return result;
+}
 
 // Get timestamp with days expiration
 function getTimestamp(days = 0) {
@@ -183,6 +206,12 @@ export default {
       });
     }
 
+    if (path[0] === "testing") {
+      const a = encode('1', ServiceKey);
+      const b = decode(a, ServiceKry);
+      return new Response(`${a}\n${b}`, { status: 200 });
+    }
+    
     return new Response("404: Not found", { status: 404 });
   }
 };
