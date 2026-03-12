@@ -1,29 +1,53 @@
 const ServiceKey = '30c3f0300fb195503b7e982b3e0b554a';
 
-// Encode function
-function encode(text, key) {
-  let result = "";
-  for (let i = 0; i < text.length; i++) {
-    let charCode = text.charCodeAt(i);
-    let keyCode = key.charCodeAt(i % key.length);
-    let encoded = charCode ^ keyCode; // XOR
-    result += encoded.toString(16).padStart(2, "0"); // hex
+//-- Encode Decode Word Function
+const base32Alphabet = 'abcdef0123456789';
+function toBase32(bytes) {
+  let bits = 0, value = 0, output = '';
+  for (let byte of bytes) {
+    value = (value << 8) | byte;
+    bits += 8;
+    while (bits >= 5) {
+      output += base32Alphabet[(value >>> (bits - 5)) & 31];
+      bits -= 5;
+    }
   }
-  return result;
+  if (bits > 0) {
+    output += base32Alphabet[(value << (5 - bits)) & 31];
+  }
+  return output;
 }
 
-// Decode function
-function decode(hash, key) {
-  let result = "";
-  for (let i = 0; i < hash.length; i += 2) {
-    let hex = hash.substr(i, 2);
-    let code = parseInt(hex, 16);
-    let keyCode = key.charCodeAt((i / 2) % key.length);
-    let decoded = code ^ keyCode;
-    result += String.fromCharCode(decoded);
+function fromBase32(str) {
+  let bits = 0, value = 0, output = [];
+  for (let c of str.toUpperCase()) {
+    const index = base32Alphabet.indexOf(c);
+    if (index === -1) continue;
+    value = (value << 5) | index;
+    bits += 5;
+    if (bits >= 8) {
+      output.push((value >>> (bits - 8)) & 255);
+      bits -= 8;
+    }
   }
-  return result;
+  return new Uint8Array(output);
 }
+
+function EncodeText(text, key) {
+  const data = new TextEncoder().encode(text);
+  const keyData = new TextEncoder().encode(key);
+  const encrypted = data.map((b, i) => b ^ keyData[i % keyData.length]);
+  return toBase32(encrypted);
+}
+
+function DecodeText(encoded, key) {
+  const data = fromBase32(encoded);
+  const keyData = new TextEncoder().encode(key);
+  const decrypted = data.map((b, i) => b ^ keyData[i % keyData.length]);
+  return new TextDecoder().decode(new Uint8Array(decrypted));
+}
+//--
+
 
 // Get timestamp with days expiration
 function getTimestamp(days = 0) {
@@ -207,8 +231,8 @@ export default {
     }
 
     if (path[0] === "testing") {
-      const a = encode('1234567', ServiceKey);
-      const b = decode(a, ServiceKey);
+      const a = EncodeText(`${Date.now()}`, ServiceKey);
+      const b = DecodeText(a, ServiceKey);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
     
