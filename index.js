@@ -1,4 +1,5 @@
 const ServiceKey = '30c3f0300fb195503b7e982b3e0b554a';
+const SYSTEM_KEY = "jamx-wpf4-20gn-920g-Il0v3-Russia-382g";
 
 // Encode Function
 function encode(text, key) {
@@ -35,7 +36,7 @@ function _bytesToString(bytes) {
 
 function encodeWithSystemKey(message) {
   if (typeof message !== "string") throw new TypeError("message must be a string");
-  const keyBytes = _getKeyBytes(ServiceKey);
+  const keyBytes = _getKeyBytes(SYSTEM_KEY);
   const msgBytes = new TextEncoder().encode(message);
   const keyLen = keyBytes.length;
   let hex = "";
@@ -49,7 +50,7 @@ function encodeWithSystemKey(message) {
 function decodeWithSystemKey(hexstr) {
   if (typeof hexstr !== "string") throw new TypeError("hexstr must be a string");
   if (hexstr.length % 2 !== 0) throw new Error("Invalid hex string length");
-  const keyBytes = _getKeyBytes(ServiceKey);
+  const keyBytes = _getKeyBytes(SYSTEM_KEY);
   const keyLen = keyBytes.length;
   const byteLen = hexstr.length / 2;
   let outBytes = new Uint8Array(byteLen);
