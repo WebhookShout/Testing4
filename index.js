@@ -206,7 +206,7 @@ export default {
 
     if (path[0] === "testing") {
       const timestamp = await getTimestamp(1);
-      const a = encode(timestamp, ServiceKey);
+      const a = encode(`${timestamp}`, ServiceKey);
       const b = decode(a, ServiceKey);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
