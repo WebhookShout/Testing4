@@ -205,7 +205,7 @@ export default {
     }
 
     if (path[0] === "testing") {
-      const a = encode(`${Date.now()}`, ServiceKey);
+      const a = encode(`130230284827`, ServiceKey);
       const b = decode(a, ServiceKey);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
