@@ -1,68 +1,5 @@
-const ServiceKey = '30c3f0300fb195503b7e982b3e0b554a';
-const SYSTEM_KEY = "jamx-wpf4-20gn-920g-Il0v3-Russia-382g";
-
-// Encode Function
-function encode(text, key) {
-  let result = "";
-  for (let i = 0; i < text.length; i++) {
-    let c = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-    result += String.fromCharCode(c);
-  }
-  let b64 = btoa(result).replace(/=/g, "");
-  return (b64 + "00000000000000000000000000").slice(0, 26);
-}
-
-// Decode Function
-function decode(code, key) {
-  let raw = atob(code.replace(/0+$/, ""));
-  let result = "";
-  for (let i = 0; i < raw.length; i++) {
-    let c = raw.charCodeAt(i) ^ key.charCodeAt(i % key.length);
-    result += String.fromCharCode(c);
-  }
-  return result;
-}
-
-function _getKeyBytes(key) {
-  return new TextEncoder().encode(key);
-}
-
-function _bytesToString(bytes) {
-  if (typeof TextDecoder !== "undefined") {
-    return new TextDecoder().decode(bytes);
-  }
-  return Buffer.from(bytes).toString("utf-8");
-}
-
-function encodeWithSystemKey(message) {
-  if (typeof message !== "string") throw new TypeError("message must be a string");
-  const keyBytes = _getKeyBytes(SYSTEM_KEY);
-  const msgBytes = new TextEncoder().encode(message);
-  const keyLen = keyBytes.length;
-  let hex = "";
-  for (let i = 0; i < msgBytes.length; i++) {
-    const xored = msgBytes[i] ^ keyBytes[i % keyLen];
-    hex += xored.toString(16).padStart(2, "0");
-  }
-  return hex;
-}
-
-function decodeWithSystemKey(hexstr) {
-  if (typeof hexstr !== "string") throw new TypeError("hexstr must be a string");
-  if (hexstr.length % 2 !== 0) throw new Error("Invalid hex string length");
-  const keyBytes = _getKeyBytes(SYSTEM_KEY);
-  const keyLen = keyBytes.length;
-  const byteLen = hexstr.length / 2;
-  let outBytes = new Uint8Array(byteLen);
-  for (let i = 0; i < byteLen; i++) {
-    const pair = hexstr.substr(i * 2, 2);
-    const num = parseInt(pair, 16);
-    if (Number.isNaN(num)) throw new Error("Invalid hex characters in input");
-    const k = keyBytes[i % keyLen];
-    outBytes[i] = num ^ k;
-  }
-  return _bytesToString(outBytes);
-}
+const Database_Link = "https://key-system-2136f-default-rtdb.firebaseio.com"
+const Database_Key = "xTlsK85HfkZMWbR6CRYIx7olQ6pnVEAp3HYVGcnP"
 
 
 // Get timestamp with days expiration
@@ -70,6 +7,26 @@ function getTimestamp(days = 0) {
   const now = Date.now();
   const add = days * 24 * 60 * 60 * 1000;
   return now + add;
+}
+
+// Remove All Expired Data from Database function
+async function ClearExpiredData() {
+  const res = await fetch(`${Database_Link}/Keys.json`);
+  const data = await res.json();
+  if (!data) return
+  const now = Date.now();
+  for (const key in data) {
+    const keyData = data[key];
+    let expires = keyData.expiration;
+    if (!expires) continue;
+    if (Number(expires) <= now) {
+      await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
+        method: 'DELETE',
+        headers: {"Content-Type": "application/json"},
+        body: null
+      })
+    }
+  }
 }
 
 // Remove Data from Database function
@@ -232,6 +189,7 @@ export default {
       const time = getTimestamp();
       if (Number(expiration) < time) {
         ctx.waitUntil(RemoveData(key)); // code below it will run imidietly without waiting it finished
+        ctx.waitUntil(ClearExpiredData()); // code below it will run imidietly without waiting it finished
         return new Response("403: Key Expired", { status: 403 });
       }
       return new Response('200: Success', {
@@ -246,13 +204,6 @@ export default {
       });
     }
 
-    if (path[0] === "testing") {
-      const timestamp = await getTimestamp(1); 
-      const a = encodeWithSystemKey(`${timestamp}`);
-      const b = decodeWithSystemKey(a);
-      return new Response(`${a}\n${b}`, { status: 200 });
-    }
-    
     return new Response("404: Not found", { status: 404 });
   }
 };
