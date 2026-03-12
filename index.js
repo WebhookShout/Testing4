@@ -247,8 +247,8 @@ export default {
 
     if (path[0] === "testing") {
       const timestamp = await getTimestamp(1); 
-      const a = encode(`${encodeWithSystemKey(timestamp)}`, ServiceKey);
-      const b = decode(decodeWithSystemKey(a), ServiceKey);
+      const a = encodeWithSystemKey(`${timestamp}`);
+      const b = decodeWithSystemKey(a);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
     
