@@ -22,6 +22,47 @@ function decode(code, key) {
   return result;
 }
 
+function _getKeyBytes(key) {
+  return new TextEncoder().encode(key);
+}
+
+function _bytesToString(bytes) {
+  if (typeof TextDecoder !== "undefined") {
+    return new TextDecoder().decode(bytes);
+  }
+  return Buffer.from(bytes).toString("utf-8");
+}
+
+function encodeWithSystemKey(message) {
+  if (typeof message !== "string") throw new TypeError("message must be a string");
+  const keyBytes = _getKeyBytes(SYSTEM_KEY);
+  const msgBytes = new TextEncoder().encode(message);
+  const keyLen = keyBytes.length;
+  let hex = "";
+  for (let i = 0; i < msgBytes.length; i++) {
+    const xored = msgBytes[i] ^ keyBytes[i % keyLen];
+    hex += xored.toString(16).padStart(2, "0");
+  }
+  return hex;
+}
+
+function decodeWithSystemKey(hexstr) {
+  if (typeof hexstr !== "string") throw new TypeError("hexstr must be a string");
+  if (hexstr.length % 2 !== 0) throw new Error("Invalid hex string length");
+  const keyBytes = _getKeyBytes(SYSTEM_KEY);
+  const keyLen = keyBytes.length;
+  const byteLen = hexstr.length / 2;
+  let outBytes = new Uint8Array(byteLen);
+  for (let i = 0; i < byteLen; i++) {
+    const pair = hexstr.substr(i * 2, 2);
+    const num = parseInt(pair, 16);
+    if (Number.isNaN(num)) throw new Error("Invalid hex characters in input");
+    const k = keyBytes[i % keyLen];
+    outBytes[i] = num ^ k;
+  }
+  return _bytesToString(outBytes);
+}
+
 
 // Get timestamp with days expiration
 function getTimestamp(days = 0) {
@@ -206,8 +247,8 @@ export default {
 
     if (path[0] === "testing") {
       const timestamp = await getTimestamp(1);
-      const a = encode(`${timestamp}`, ServiceKey);
-      const b = decode(a, ServiceKey);
+      const a = encode(`${encodeWithSystemKey(timestamp)}`, ServiceKey);
+      const b = decode(decodeWithSystemKey(a), ServiceKey);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
     
