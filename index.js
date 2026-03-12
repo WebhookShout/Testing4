@@ -1,52 +1,26 @@
 const ServiceKey = '30c3f0300fb195503b7e982b3e0b554a';
 
-//-- Encode Decode Word Function
-const base32Alphabet = 'abcdef0123456789';
-function toBase32(bytes) {
-  let bits = 0, value = 0, output = '';
-  for (let byte of bytes) {
-    value = (value << 8) | byte;
-    bits += 8;
-    while (bits >= 5) {
-      output += base32Alphabet[(value >>> (bits - 5)) & 31];
-      bits -= 5;
-    }
+// Encode Function
+function encode(text, key) {
+  let result = "";
+  for (let i = 0; i < text.length; i++) {
+    let c = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+    result += String.fromCharCode(c);
   }
-  if (bits > 0) {
-    output += base32Alphabet[(value << (5 - bits)) & 31];
-  }
-  return output;
+  let b64 = btoa(result).replace(/=/g, "");
+  return (b64 + "00000000000000000000000000").slice(0, 26);
 }
 
-function fromBase32(str) {
-  let bits = 0, value = 0, output = [];
-  for (let c of str.toUpperCase()) {
-    const index = base32Alphabet.indexOf(c);
-    if (index === -1) continue;
-    value = (value << 5) | index;
-    bits += 5;
-    if (bits >= 8) {
-      output.push((value >>> (bits - 8)) & 255);
-      bits -= 8;
-    }
+// Decode Function
+function decode(code, key) {
+  let raw = atob(code.replace(/0+$/, ""));
+  let result = "";
+  for (let i = 0; i < raw.length; i++) {
+    let c = raw.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+    result += String.fromCharCode(c);
   }
-  return new Uint8Array(output);
+  return result;
 }
-
-function EncodeText(text, key) {
-  const data = new TextEncoder().encode(text);
-  const keyData = new TextEncoder().encode(key);
-  const encrypted = data.map((b, i) => b ^ keyData[i % keyData.length]);
-  return toBase32(encrypted);
-}
-
-function DecodeText(encoded, key) {
-  const data = fromBase32(encoded);
-  const keyData = new TextEncoder().encode(key);
-  const decrypted = data.map((b, i) => b ^ keyData[i % keyData.length]);
-  return new TextDecoder().decode(new Uint8Array(decrypted));
-}
-//--
 
 
 // Get timestamp with days expiration
@@ -231,8 +205,8 @@ export default {
     }
 
     if (path[0] === "testing") {
-      const a = EncodeText(`${Date.now()}`, ServiceKey);
-      const b = DecodeText(a, ServiceKey);
+      const a = encode(`${Date.now()}`, ServiceKey);
+      const b = decode(a, ServiceKey);
       return new Response(`${a}\n${b}`, { status: 200 });
     }
     
