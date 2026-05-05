@@ -29,6 +29,27 @@ async function ClearExpiredData() {
   }
 }
 
+// Update Last Run from Database function
+async function UpdateLastRun() {
+  const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`);
+  const data = await res.json();
+  const timestamp = getTimestamp();
+  let time
+  if (data === null) {
+    time = timestamp;
+  } else {
+    time = data.time;
+  }
+  const res2 = await fetch(`${Database_Link}/Last_Run/.json?auth=${Database_Key}`, {
+    method: 'PUT',
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      time: timestamp,
+      between: (timestamp - time) / 1000
+    })
+  })
+}
+
 // Remove Data from Database function
 async function RemoveData(key) {
   const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
@@ -36,6 +57,7 @@ async function RemoveData(key) {
     headers: {"Content-Type": "application/json"},
     body: null
   })
+  ctx.waitUntil(UpdateLastRun()); // code below it will run imidietly without waiting it finished
 }
 
 // Add Data to Database function
@@ -48,6 +70,7 @@ async function AddData(key, time, country_code) {
       country_code: country_code
     })
   })
+  ctx.waitUntil(UpdateLastRun()); // code below it will run imidietly without waiting it finished
 }
 
 
@@ -209,12 +232,6 @@ export default {
       });
     }
 
-    if (path[0] === "testing") {
-      return new Response(getTimestamp(), {
-        headers: { "Content-Type": "text/plain" }
-      });
-    }
-    
     return new Response("404: Not found", { status: 404 });
   }
 };
