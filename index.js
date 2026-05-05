@@ -31,7 +31,7 @@ async function ClearExpiredData() {
 
 // Update Last Run from Database function
 async function UpdateLastRun() {
-  const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`);
+  const res = await fetch(`${Database_Link}/Last_Run/.json`);
   const data = await res.json();
   const timestamp = getTimestamp();
   let time
@@ -40,7 +40,7 @@ async function UpdateLastRun() {
   } else {
     time = data.time;
   }
-  const res2 = await fetch(`${Database_Link}/Last_Run/.json?auth=${Database_Key}`, {
+  const res2 = await fetch(`${Database_Link}/Last_Run/.json`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
