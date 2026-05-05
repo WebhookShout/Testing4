@@ -232,7 +232,7 @@ export default {
       });
     }
 
-    if (path[0] === "testing")
+    if (path[0] === "testing") {
       const res = await UpdateLastRun();
       return new Response(true, {
         headers: { "Content-Type": "text/plain" }
