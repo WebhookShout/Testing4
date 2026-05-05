@@ -40,7 +40,7 @@ async function UpdateLastRun() {
   } else {
     time = data.time;
   }
-  const res2 = await fetch(`${Database_Link}/Last_Run/.json`, {
+  const res2 = await fetch(`${Database_Link}/Last_Run/.json?auth=${Database_Key}`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
