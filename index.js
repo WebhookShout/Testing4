@@ -232,6 +232,13 @@ export default {
       });
     }
 
+    if (path[0] === "testing")
+      const res = await UpdateLastRun();
+      return new Response(true, {
+        headers: { "Content-Type": "text/plain" }
+      });
+    }
+      
     return new Response("404: Not found", { status: 404 });
   }
 };
