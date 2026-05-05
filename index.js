@@ -39,12 +39,13 @@ async function RemoveData(key) {
 }
 
 // Add Data to Database function
-async function AddData(key, time) {
+async function AddData(key, time, country_code) {
   const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
-      expiration: time 
+      expiration: time,
+      country_code: country_code
     })
   })
 }
@@ -57,12 +58,13 @@ export default {
     const path = url.pathname.split("/").filter(Boolean);
     const method = request.method;
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
-
+    const countryCode = request.headers.get("CF-IPCountry") || "Unknown";
+    
     // Make Key Starter
     if (path[0] === "make" && method === "GET") {
       const timestamp = await getTimestamp(1);
       const key = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
-      ctx.waitUntil(AddData(key, timestamp)); // code below it will run imidietly without waiting it finished
+      ctx.waitUntil(AddData(key, timestamp, countryCode)); // code below it will run imidietly without waiting it finished
       return Response.redirect(`${domain}/create/${key}`, 302);
     }
     
@@ -191,6 +193,9 @@ export default {
         ctx.waitUntil(RemoveData(key)); // code below it will run imidietly without waiting it finished
         ctx.waitUntil(ClearExpiredData()); // code below it will run imidietly without waiting it finished
         return new Response("403: Key Expired", { status: 403 });
+      }
+      if (countryCode !== result.country_code) {
+        return new Response("400: Bad Request", { status: 400 });
       }
       return new Response('200: Success', {
         headers: { "Content-Type": "text/plain" }
