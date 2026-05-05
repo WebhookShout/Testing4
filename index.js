@@ -194,7 +194,7 @@ export default {
         ctx.waitUntil(ClearExpiredData()); // code below it will run imidietly without waiting it finished
         return new Response("403: Key Expired", { status: 403 });
       }
-      if (countryCode !== result.country_code) {
+      if ("country_code" in result && countryCode !== result.country_code) {
         return new Response("400: Bad Request", { status: 400 });
       }
       return new Response('200: Success', {
