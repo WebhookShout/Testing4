@@ -209,6 +209,12 @@ export default {
       });
     }
 
+    if (path[0] === "testing") {
+      return new Response(countryCode, {
+        headers: { "Content-Type": "text/plain" }
+      });
+    }
+    
     return new Response("404: Not found", { status: 404 });
   }
 };
