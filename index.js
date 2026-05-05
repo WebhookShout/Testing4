@@ -210,7 +210,7 @@ export default {
     }
 
     if (path[0] === "testing") {
-      return new Response(countryCode, {
+      return new Response(getTimestamp(), {
         headers: { "Content-Type": "text/plain" }
       });
     }
