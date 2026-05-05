@@ -29,27 +29,6 @@ async function ClearExpiredData() {
   }
 }
 
-// Update Last Run from Database function
-async function UpdateLastRun() {
-  const res = await fetch(`${Database_Link}/Last_Run/.json`);
-  const data = await res.json();
-  const timestamp = getTimestamp();
-  let time
-  if (data === null) {
-    time = timestamp;
-  } else {
-    time = data.time;
-  }
-  const res2 = await fetch(`${Database_Link}/Last_Run/.json?auth=${Database_Key}`, {
-    method: 'PUT',
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      time: timestamp,
-      between: (timestamp - time) / 1000
-    })
-  })
-}
-
 // Remove Data from Database function
 async function RemoveData(key) {
   const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
@@ -57,20 +36,17 @@ async function RemoveData(key) {
     headers: {"Content-Type": "application/json"},
     body: null
   })
-  ctx.waitUntil(UpdateLastRun()); // code below it will run imidietly without waiting it finished
 }
 
 // Add Data to Database function
-async function AddData(key, time, country_code) {
+async function AddData(key, time) {
   const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
-      expiration: time,
-      country_code: country_code
+      expiration: time 
     })
   })
-  ctx.waitUntil(UpdateLastRun()); // code below it will run imidietly without waiting it finished
 }
 
 
@@ -82,12 +58,13 @@ export default {
     const method = request.method;
     const ip = request.headers.get("CF-Connecting-IP") || "Unknown";
     const countryCode = request.headers.get("CF-IPCountry") || "Unknown";
+    const referer = request.headers.get("referer"); // get 1st link to redirected link
     
     // Make Key Starter
-    if (path[0] === "make" && method === "GET") {
+    if (path[0] === "make" && method === "GET" && referer) {
       const timestamp = await getTimestamp(1);
       const key = crypto.randomUUID().replace(/-/g, "").slice(0, 26);
-      ctx.waitUntil(AddData(key, timestamp, countryCode)); // code below it will run imidietly without waiting it finished
+      ctx.waitUntil(AddData(key, timestamp)); // code below it will run imidietly without waiting it finished
       return Response.redirect(`${domain}/create/${key}`, 302);
     }
     
@@ -163,6 +140,11 @@ export default {
   </style>
 </head>
 <body>
+
+  <!-- Adsterra to Earn Money -->
+  <script src="https://pl28955444.profitablecpmratenetwork.com/fc/15/9f/fc159feae31d894d63a77a384f0bc8f3.js"></script>
+  <!-- -->
+  
   <div class="container">
     <div class="title">Your Access Key</div>
     <div class="divider"></div>
@@ -191,6 +173,9 @@ export default {
         copyBtn.innerText = "Copied!";
         setTimeout(() => copyBtn.innerText = "Copy Key", 2000);
       });
+      // Adsterra Earn Money by Ads
+      window.location.href = "https://www.effectivegatecpm.com/hag5evww?key=05011499f496163c6920944e9dd8a866";
+      //
     }
   </script>
 </body>
@@ -232,13 +217,6 @@ export default {
       });
     }
 
-    if (path[0] === "testing") {
-      const res = await UpdateLastRun();
-      return new Response(true, {
-        headers: { "Content-Type": "text/plain" }
-      });
-    }
-      
     return new Response("404: Not found", { status: 404 });
   }
 };
