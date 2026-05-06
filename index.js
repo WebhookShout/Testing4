@@ -40,11 +40,20 @@ async function RemoveData(key) {
 
 // Add Data to Database function
 async function AddData(key, time, country_code) {
-  const res = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
+  let country = "Unknown"
+  if (country_code !== null && country_code !== "Unknown") {
+    const res = await fetch(`https://restcountries.com/v3.1/alpha/${country_code}`);
+    const data = res.json();
+    if ("name" in data && "common" in data.name) {
+      country = data.name.common;
+    }
+  }
+  const res2 = await fetch(`${Database_Link}/Keys/${key}.json?auth=${Database_Key}`, {
     method: 'PUT',
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
       expiration: time,
+      country: country,
       country_code: country_code
     })
   })
